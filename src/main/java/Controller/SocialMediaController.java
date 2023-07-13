@@ -7,7 +7,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import Model.Account;
+import Model.Message;
 import Service.AccountService;
+import Service.MessageService;
 
 
 /**
@@ -17,10 +19,11 @@ import Service.AccountService;
  */
 public class SocialMediaController {
     AccountService accountService;
-    // Message todo
+    MessageService messageService;
 
     public SocialMediaController(){
         this.accountService = new AccountService();
+        this.messageService = new MessageService();
     }
     /**
      * In order for the test cases to work, you will need to write the endpoints in the startAPI() method, as the test
@@ -31,14 +34,13 @@ public class SocialMediaController {
         Javalin app = Javalin.create();
         app.post("/register", this::postUserHandler);
         app.post("/login", this::postLoginHandler);
+        app.get("/messages", this::getAllMessagesHandler);
+        app.get("/messages/{message_id}", this::getMessageByIdHandler);
 
         return app;
     }
 
-    /**
-     * This is an example handler for an example endpoint.
-     * @param context The Javalin Context object manages information about both the HTTP request and response.
-     */
+    // Account
     private void postUserHandler(Context ctx) throws JsonProcessingException {
         
         ObjectMapper mapper = new ObjectMapper();
@@ -68,6 +70,27 @@ public class SocialMediaController {
         }
 
     }
+
+    // Messages Controllers
+    private void getAllMessagesHandler(Context ctx) throws JsonProcessingException{
+        ctx.json(messageService.getAllMessages());
+    }
+
+    private void getMessageByIdHandler(Context ctx) throws JsonProcessingException{
+       Message message =messageService.getMessageById(Integer.parseInt(ctx.pathParam("message_id")));
+       if(message != null){
+
+           ctx.json(message);
+       } else {
+         ctx.status(200);
+       }
+       
+    }
+
+ 
+ 
+
+
 
 
 }
