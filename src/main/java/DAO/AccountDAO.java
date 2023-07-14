@@ -2,7 +2,7 @@ package DAO;
 
 import Model.Account;
 import Util.ConnectionUtil;
-    
+
 import java.sql.*;
 
 
@@ -92,5 +92,36 @@ public Account login(Account account){
     return null;
 
 }
+
+// finds account by id 
+
+public Account geAccount(int user_id){
+    Connection connection = ConnectionUtil.getConnection();
+
+    try{ 
+        String sql = "SELECT * FROM account WHERE account_id = ?";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+        preparedStatement.setInt(1, user_id);
+
+
+        ResultSet rs = preparedStatement.executeQuery();
+        
+
+        while(rs.next()){
+            Account loginAccount = new Account(
+                rs.getInt("account_id"),
+                rs.getString("username"),
+                rs.getString("password")
+                );
+            return loginAccount;
+        }
+
+    }catch(SQLException e){
+        System.out.println(e.getMessage());
+    }
+    return null;
+
+} 
 
 }
