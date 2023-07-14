@@ -24,7 +24,12 @@ public class MessageService {
     }
 
     // Get message by Id
-    public Message getMessageById(int id){
-        return messageDAO.getMessageById(id);
+    public Message getMessageById(int message_id){
+        return messageDAO.getMessageById(message_id);
+    }
+
+    // Get users messages by user_id
+    public List<Message> getAllUsersMessages(int user_id){
+        return messageDAO.getAllUsersMessages(user_id);
     }
 }

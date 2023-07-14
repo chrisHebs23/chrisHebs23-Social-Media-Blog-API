@@ -10,6 +10,8 @@ import Model.Account;
 import Model.Message;
 import Service.AccountService;
 import Service.MessageService;
+import java.util.List;
+
 
 
 /**
@@ -36,11 +38,12 @@ public class SocialMediaController {
         app.post("/login", this::postLoginHandler);
         app.get("/messages", this::getAllMessagesHandler);
         app.get("/messages/{message_id}", this::getMessageByIdHandler);
+        app.get("/accounts/{user_id}/messages", this::getUserMessages);
 
         return app;
     }
 
-    // Account
+    // Account controllers
     private void postUserHandler(Context ctx) throws JsonProcessingException {
         
         ObjectMapper mapper = new ObjectMapper();
@@ -79,10 +82,19 @@ public class SocialMediaController {
     private void getMessageByIdHandler(Context ctx) throws JsonProcessingException{
        Message message =messageService.getMessageById(Integer.parseInt(ctx.pathParam("message_id")));
        if(message != null){
-
-           ctx.json(message);
+          ctx.json(message);
        } else {
-         ctx.status(200);
+        ctx.status(200);
+       }
+    }
+
+    private void getUserMessages(Context ctx) throws JsonProcessingException{
+       List<Message> message = messageService.getAllUsersMessages(Integer.parseInt(ctx.pathParam("user_id")));
+       if(message != null){
+        
+          ctx.json(message);
+       } else {
+        ctx.status(200);
        }
        
     }

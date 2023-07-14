@@ -33,7 +33,7 @@ public class MessageDAO {
     }
     
     // Get a message by id
-    public Message getMessageById(int id){
+    public Message getMessageById(int message_id){
         Connection connection = ConnectionUtil.getConnection();
       
         try {
@@ -41,7 +41,7 @@ public class MessageDAO {
 
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
-        preparedStatement.setInt(1,id);
+        preparedStatement.setInt(1,message_id);
 
         ResultSet rs = preparedStatement.executeQuery();
         
@@ -62,8 +62,36 @@ public class MessageDAO {
     }
 
     // Get all of a users messages given user id.
+    public List<Message> getAllUsersMessages(int user_id){
+        Connection connection = ConnectionUtil.getConnection();
+        List<Message> messages = new ArrayList<>();
+
+        try {
+        String sql = "SELECT * FROM message WHERE posted_by = ?";
+
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setInt(1, user_id);
+        ResultSet rs = preparedStatement.executeQuery();
+
+        while(rs.next()){
+            Message message = new Message(
+                rs.getInt("message_id"), 
+                rs.getInt("posted_by"), 
+                rs.getString("message_text"), 
+                rs.getInt("time_posted_epoch")
+                );
+            messages.add(message);
+        }
+            
+        } catch (SQLException e) {
+           System.out.println(e.getMessage());
+        }
+        return messages;
+    }
+
 
     // Create a new message
+    
 
     // Update a message with id
 
