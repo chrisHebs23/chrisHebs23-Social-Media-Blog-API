@@ -3,14 +3,15 @@ package DAO;
 import Model.Message;
 import Util.ConnectionUtil;
 
-import static org.mockito.Mockito.never;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MessageDAO {
-    // Get All Messages
+    /**
+     * 
+     * @return List of All Messages
+     */
     public List<Message> getAllMessages(){
         Connection connection = ConnectionUtil.getConnection();
         List<Message> messages = new ArrayList<>();
@@ -32,7 +33,11 @@ public class MessageDAO {
         return messages;
     }
     
-    // Get a message by id
+    /**
+     * 
+     * @param message_id
+     * @return Single Message
+     */
     public Message getMessageById(int message_id){
         Connection connection = ConnectionUtil.getConnection();
       
@@ -61,7 +66,11 @@ public class MessageDAO {
         return null;
     }
 
-    // Get all of a users messages given user id.
+    /**
+     * 
+     * @param user_id
+     * @return List of Messges from a User
+     */
     public List<Message> getAllUsersMessages(int user_id){
         Connection connection = ConnectionUtil.getConnection();
         List<Message> messages = new ArrayList<>();
@@ -90,30 +99,30 @@ public class MessageDAO {
     }
 
 
-    // Create a new message
+    /**
+     * 
+     * @param message
+     * @return New Created Message
+     */
     public Message createMessage(Message message){
         Connection connection = ConnectionUtil.getConnection();
 
         try {
-            String sql = "INSERT INTO message(posted_by, message_text, time_posted_epoch ) VALUES (?,?,?)";
-
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            String sql = "INSERT INTO message (posted_by, message_text, time_posted_epoch) VALUES (?,?,?)";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+       
 
             preparedStatement.setInt(1, message.getPosted_by());
-            preparedStatement.setString(1, message.getMessage_text());
-            preparedStatement.setLong(1, message.getTime_posted_epoch());
+            preparedStatement.setString(2, message.getMessage_text());
+            preparedStatement.setLong(3,message.getTime_posted_epoch());
             preparedStatement.executeUpdate();
 
             ResultSet pkeyResultSet = preparedStatement.getGeneratedKeys();
-
+          
+            
             if(pkeyResultSet.next()){
                 int generate_message_id = (int) pkeyResultSet.getLong(1);
-                return new Message(
-                    generate_message_id, 
-                    message.getPosted_by(), 
-                    message.getMessage_text(),
-                    message.getTime_posted_epoch()
-                    );
+                return new Message(generate_message_id, message.getPosted_by(), message.getMessage_text(), message.getTime_posted_epoch());
             }
             
         } catch (SQLException e) {
@@ -122,9 +131,58 @@ public class MessageDAO {
         return null;
     }
 
-    // Update a message with id
+    /**
+     * 
+     * @param message_id
+     * @param message
+     * @return Updated Message
+     */
+    public Message updateMessageById(int message_id, Message message){
+        Connection connection = ConnectionUtil.getConnection();
 
-    // Delete a message given an id
+        try {
+            String sql = "UPDATE message SET message_text = ? WHERE message_id = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+            preparedStatement.setString(1, message.getMessage_text());
+            preparedStatement.setInt(2, message_id);
+            preparedStatement.execute();
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return getMessageById(message_id);
+
+    }
+
+    /**
+     * 
+     * @param message_id
+     * @return Deleted Message
+     */
+    public Message deleteMessageById(int message_id){
+        Connection connection = ConnectionUtil.getConnection();
+
+        Message deletedMessage = getMessageById(message_id);
+
+        try {
+            String sql = "DELETE FROM message WHERE message_id = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+            preparedStatement.setInt(1, message_id);
+            preparedStatement.execute();
+
+            
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return deletedMessage;
+
+
+    }
+
 
 
     

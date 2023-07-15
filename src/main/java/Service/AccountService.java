@@ -18,20 +18,25 @@ public class AccountService {
         this.accountDAO = accountDAO;
     }
     
-    // Add a new AccountDAO to the database
+    /**
+     * 
+     * @param account
+     * @return New Account
+     */
     public Account registerUser(Account account){
-    
         if(accountDAO.getUserByUsername(account.getUsername()) == null && account.getPassword().length() >= 4 && account.getUsername() != "" ){
-    
             return this.accountDAO.register(account);
         }
         return null;
     }
 
+    /**
+     * 
+     * @param account
+     * @return Found account
+     */
     public Account loginUser(Account account){
-       
         return accountDAO.login(account);
-
     }
 
 

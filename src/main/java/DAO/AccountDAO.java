@@ -8,7 +8,12 @@ import java.sql.*;
 
 
 public class AccountDAO {
-// Create a new Account (User Registeration)
+
+/**
+ * 
+ * @param account
+ * @return New Account
+ */
 public Account register(Account account){
     Connection connection = ConnectionUtil.getConnection();
 
@@ -33,8 +38,11 @@ public Account register(Account account){
     return null;
 }
 
-// Get account by username
-
+/**
+ * 
+ * @param username
+ * @return Returns an Account if usrename is found
+ */
 public Account getUserByUsername(String username){
     Connection connection = ConnectionUtil.getConnection();
 
@@ -62,8 +70,11 @@ public Account getUserByUsername(String username){
   
 }
 
-// Retrive Account (login)
-
+/**
+ * 
+ * @param account
+ * @return Logged in Account
+ */
 public Account login(Account account){
     Connection connection = ConnectionUtil.getConnection();
 
@@ -93,9 +104,12 @@ public Account login(Account account){
 
 }
 
-// finds account by id 
-
-public Account geAccount(int user_id){
+/**
+ * for seeing if user exists in creating messages
+ * @param user_id
+ * @return Boolean so important data is return
+ */
+public Boolean geAccount(int user_id){
     Connection connection = ConnectionUtil.getConnection();
 
     try{ 
@@ -108,19 +122,13 @@ public Account geAccount(int user_id){
         ResultSet rs = preparedStatement.executeQuery();
         
 
-        while(rs.next()){
-            Account loginAccount = new Account(
-                rs.getInt("account_id"),
-                rs.getString("username"),
-                rs.getString("password")
-                );
-            return loginAccount;
-        }
+        return rs.next();
+        
 
     }catch(SQLException e){
         System.out.println(e.getMessage());
     }
-    return null;
+    return false;
 
 } 
 
